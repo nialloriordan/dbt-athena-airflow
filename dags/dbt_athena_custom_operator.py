@@ -1,7 +1,9 @@
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.operators.bash_operator import BashOperator
 from airflow_dbt.operators.dbt_operator import DbtRunOperator, DbtTestOperator
+from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import datetime
 from airflow.utils.dates import timedelta
 import os
@@ -27,6 +29,13 @@ dag = DAG(
 
 with dag:
 
+    start = DummyOperator(task_id="start")
+
+    dbt_deps = BashOperator(
+        task_id="dbt_deps",
+        bash_command=f"dbt deps --project-dir {DBT_DIR}",
+    )
+
     dbt_run = DbtRunOperator(
         task_id="dbt_run",
         dir=DBT_DIR,
@@ -38,4 +47,6 @@ with dag:
         retries=0,
     )
 
-    dbt_run >> dbt_test
+    end = DummyOperator(task_id="end")
+
+    start >> dbt_deps >> dbt_run >> dbt_test >> end
