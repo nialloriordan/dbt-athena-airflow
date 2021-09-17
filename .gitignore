@@ -4,3 +4,6 @@
 # airflow logs except for folder itself
 logs/*
 !logs/.keep
+
+# cpython
+*.cpython*

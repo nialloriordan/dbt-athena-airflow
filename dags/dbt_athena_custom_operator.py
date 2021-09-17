@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
+from airflow_dbt.operators.dbt_operator import DbtRunOperator, DbtTestOperator
 from airflow.utils.dates import datetime
 from airflow.utils.dates import timedelta
 import os
@@ -19,7 +19,7 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 dag = DAG(
-    "dbt_dag_bash",
+    "dbt_dag_custom_operator",
     default_args=default_args,
     description="An Airflow DAG to invoke simple dbt commands",
     schedule_interval=timedelta(days=1),
@@ -27,16 +27,15 @@ dag = DAG(
 
 with dag:
 
-    dbt_run = BashOperator(
+    dbt_run = DbtRunOperator(
         task_id="dbt_run",
-        bash_command="cd '{{ params.dbt_dir }}' && dbt run",
-        params={"dbt_dir": DBT_DIR},
+        dir=DBT_DIR,
     )
 
-    dbt_test = BashOperator(
+    dbt_test = DbtTestOperator(
         task_id="dbt_test",
-        bash_command="cd '{{ params.dbt_dir }}' && dbt test",
-        params={"dbt_dir": DBT_DIR},
+        dir=DBT_DIR,
+        retries=0,
     )
 
     dbt_run >> dbt_test
