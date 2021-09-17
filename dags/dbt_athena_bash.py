@@ -29,14 +29,12 @@ with dag:
 
     dbt_run = BashOperator(
         task_id="dbt_run",
-        bash_command="cd '{{ params.dbt_dir }}' && dbt run",
-        params={"dbt_dir": DBT_DIR},
+        bash_command=f"dbt run --project-dir {DBT_DIR}",
     )
 
     dbt_test = BashOperator(
         task_id="dbt_test",
-        bash_command="cd '{{ params.dbt_dir }}' && dbt test",
-        params={"dbt_dir": DBT_DIR},
+        bash_command=f"dbt test --project-dir {DBT_DIR}",
     )
 
     dbt_run >> dbt_test
