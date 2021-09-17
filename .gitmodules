@@ -1,0 +1,3 @@
+[submodule "plugins/dbt-athena"]
+	path = plugins/dbt-athena
+	url = https://github.com/nialloriordan/dbt-athena
